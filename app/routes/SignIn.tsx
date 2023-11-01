@@ -1,22 +1,27 @@
-import type {
-  MetaFunction,
-  LinksFunction,
-  ActionFunctionArgs,
+import {
+  type MetaFunction,
+  type LinksFunction,
+  type ActionFunctionArgs,
+  redirect,
 } from "@remix-run/node";
+import { Form } from "@remix-run/react";
+
 import stylesheet from "~/styles/logout.css";
 import googleLogo from "../assets/images/google.png";
+
 import {
   authCreateAccountWithEmail,
   authSignInWithEmail,
-} from "~/api/firebase";
-import { Form } from "@remix-run/react";
+  createUserSession,
+} from "~/api/session.server";
+
 import { LoginOptions } from "~/types/enums";
-import type { SignUpFormData } from "~/types/interfaces";
+import type { LoginForm, SignUpFormData } from "~/types/interfaces";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Logout" },
-    { name: "Logout page", content: "Logging out of Moody" },
+    { title: "Sign In" },
+    { name: "Sign In or Up page", content: "Sign in or sign up for Moody" },
   ];
 };
 
@@ -33,13 +38,25 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }: SignUpFormData = Object.fromEntries(formData);
 
   if (submitType === LoginOptions.SIGN_UP) {
-    authCreateAccountWithEmail(email as string, password as string);
+    const user = await authCreateAccountWithEmail({
+      email,
+      password,
+    } as LoginForm);
+    console.log(user);
+
+    return redirect("/");
+    // const token = await user.getIdToken();
+    // return createUserSession(token, "/");
   } else {
-    authSignInWithEmail(email as string, password as string);
+    const { user } = await authSignInWithEmail({
+      email,
+      password,
+    } as LoginForm);
+    const token = await user.getIdToken();
+    return createUserSession(token, "/");
   }
-  return null;
 };
-export default function Index() {
+export default function SignIn() {
   return (
     <section id="logged-out-view">
       <div className="container">

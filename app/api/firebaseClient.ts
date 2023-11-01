@@ -13,24 +13,23 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
-export function authCreateAccountWithEmail(email: string, password: string) {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {})
-    .catch((error) => {
-      console.error(error.message);
-    });
+export async function authCreateAccountWithEmail(
+  email: string,
+  password: string
+) {
+  return createUserWithEmailAndPassword(auth, email, password);
 }
 
-export function authSignInWithEmail(email: string, password: string) {
+export async function authSignInWithEmail(email: string, password: string) {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      console.log("logged in");
+      return userCredential;
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
+      // const errorCode = error.code;
+      // const errorMessage = error.message;
       console.error(error.message);
     });
 }

@@ -5,3 +5,8 @@ export interface SignUpFormData {
   password?: string;
   _action?: LoginOptions;
 }
+
+export interface LoginForm {
+  email: string;
+  password: string;
+}
