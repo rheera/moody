@@ -8,9 +8,23 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import stylesheet from "~/styles/tailwind.css";
+import navStyleSheet from "~/styles/nav.css";
+import { Nav } from "./components/Nav";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
+
+  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&family=Calistoga&display=swap",
+  },
+  { rel: "stylesheet", href: navStyleSheet },
 ];
 
 export default function App() {
@@ -23,6 +37,7 @@ export default function App() {
         <Links />
       </head>
       <body>
+        <Nav />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

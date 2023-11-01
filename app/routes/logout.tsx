@@ -4,8 +4,11 @@ import type {
   ActionFunctionArgs,
 } from "@remix-run/node";
 import stylesheet from "~/styles/logout.css";
-import googleLogo from "../assets/google.png";
-import { authCreateAccountWithEmail } from "~/api/firebase";
+import googleLogo from "../assets/images/google.png";
+import {
+  authCreateAccountWithEmail,
+  authSignInWithEmail,
+} from "~/api/firebase";
 import { Form } from "@remix-run/react";
 import { LoginOptions } from "~/types/enums";
 import type { SignUpFormData } from "~/types/interfaces";
@@ -32,7 +35,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (submitType === LoginOptions.SIGN_UP) {
     authCreateAccountWithEmail(email as string, password as string);
   } else {
-    console.log("LoggedIn");
+    authSignInWithEmail(email as string, password as string);
   }
   return null;
 };
@@ -43,7 +46,10 @@ export default function Index() {
         <h1 className="app-title">Moody</h1>
 
         <div className="provider-buttons">
-          <button id="sign-in-with-google-btn" className="provider-btn">
+          <button
+            id="sign-in-with-google-btn"
+            className="provider-btn logout-button"
+          >
             <img
               src={googleLogo}
               className="google-btn-logo"
@@ -74,7 +80,7 @@ export default function Index() {
             name="_action"
             value={LoginOptions.SIGN_IN}
             id="sign-in-btn"
-            className="primary-btn"
+            className="primary-btn logout-button"
           >
             Sign in
           </button>
@@ -83,7 +89,7 @@ export default function Index() {
             name="_action"
             value={LoginOptions.SIGN_UP}
             id="create-account-btn"
-            className="secondary-btn"
+            className="secondary-btn logout-button"
           >
             Create Account
           </button>

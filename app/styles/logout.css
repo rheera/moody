@@ -23,7 +23,7 @@
 /* === Common for elements === */
 
 input,
-button {
+.logout-button {
   font-family: inherit;
   padding: var(--element-padding);
   border-radius: var(--element-border-radius);

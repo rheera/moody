@@ -26,12 +26,11 @@ export function authCreateAccountWithEmail(email: string, password: string) {
 export function authSignInWithEmail(email: string, password: string) {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed in
-      const user = userCredential.user;
-      // ...
+      console.log("logged in");
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
+      console.error(error.message);
     });
 }
