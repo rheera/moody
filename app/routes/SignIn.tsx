@@ -3,6 +3,8 @@ import {
   type LinksFunction,
   type ActionFunctionArgs,
   redirect,
+  LoaderFunctionArgs,
+  json,
 } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 
@@ -13,6 +15,7 @@ import {
   authCreateAccountWithEmail,
   authSignInWithEmail,
 } from "~/api/session.server";
+import { commitSession, getSession } from "~/api/sessions";
 
 import { LoginOptions } from "~/types/enums";
 import type { LoginForm, SignUpFormData } from "~/types/interfaces";
@@ -28,7 +31,26 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request.headers.get("Cookie"));
+  console.log(session.data);
+
+  if (session.has("userId")) {
+    // Redirect to the home page if they are already signed in.
+    return redirect("/");
+  }
+
+  const data = { error: session.get("error") };
+
+  return json(data, {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
+};
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const session = await getSession(request.headers.get("Cookie"));
+
   const formData = await request.formData();
   const {
     email,
@@ -36,31 +58,47 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     _action: submitType,
   }: SignUpFormData = Object.fromEntries(formData);
 
+  /**
+   * TODO: refactor this code so it's cleaner
+   * if and else both shouldn't have a const user
+   * should be const user = if(signup) else(signin)
+   * need to return redirect to login page with Set-Cookie headers as per remix sessions doc
+   */
   if (submitType === LoginOptions.SIGN_UP) {
     const user = await authCreateAccountWithEmail({
       email,
       password,
     } as LoginForm)
-      .then((data) => {
-        return redirect("/");
+      .then(async (data) => {
+        session.set("userId", data.uid);
+        return redirect("/", {
+          headers: {
+            "Set-Cookie": await commitSession(session),
+          },
+        });
       })
       .catch((e) => {
         return e.message;
       });
     return user;
-    // const token = await user.getIdToken();
-    // return createUserSession(token, "/");
   } else {
     const user = await authSignInWithEmail({
       email,
       password,
     } as LoginForm)
-      .then((data) => {
-        return redirect("/");
+      .then(async (data) => {
+        session.set("userId", data.uid);
+        return redirect("/", {
+          headers: {
+            "Set-Cookie": await commitSession(session),
+          },
+        });
       })
       .catch((e) => {
+        session.flash("error", "Invalid username/password");
         return e.message;
       });
+
     return user;
   }
 };

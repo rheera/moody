@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "~/api/firebaseClient";
-import { LoginForm } from "~/types/interfaces";
+import type { LoginForm } from "~/types/interfaces";
 
 export async function authCreateAccountWithEmail({
   email,
