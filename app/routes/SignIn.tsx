@@ -33,7 +33,6 @@ export const links: LinksFunction = () => [
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request.headers.get("Cookie"));
-  console.log(session.data);
 
   if (session.has("userId")) {
     // Redirect to the home page if they are already signed in.

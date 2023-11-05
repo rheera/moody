@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Link, NavLink } from "@remix-run/react";
+import { Form, Link, NavLink } from "@remix-run/react";
 
 export const Nav = () => {
   const navigation = [{ name: "Home", to: "/" }];
@@ -8,6 +8,7 @@ export const Nav = () => {
   function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
   }
+
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -131,15 +132,16 @@ export const Nav = () => {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <Link
-                            className={classNames(
-                              active ? "bg-gray-100" : "",
-                              "block px-4 py-2 text-sm text-gray-700 w-full text-left"
-                            )}
-                            to="SignIn"
-                          >
-                            Sign out
-                          </Link>
+                          <Form method="post">
+                            <button
+                              className={classNames(
+                                active ? "bg-gray-100" : "",
+                                "block px-4 py-2 text-sm text-gray-700 w-full text-left"
+                              )}
+                            >
+                              Sign out
+                            </button>
+                          </Form>
                         )}
                       </Menu.Item>
                     </Menu.Items>

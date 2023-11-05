@@ -1,4 +1,4 @@
-import type { LinksFunction } from "@remix-run/node";
+import { type ActionFunctionArgs, type LinksFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -10,6 +10,7 @@ import {
 import stylesheet from "~/styles/tailwind.css";
 import navStyleSheet from "~/styles/nav.css";
 import { Nav } from "./components/Nav";
+import { logout } from "./api/session.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -26,6 +27,14 @@ export const links: LinksFunction = () => [
   },
   { rel: "stylesheet", href: navStyleSheet },
 ];
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  try {
+    return await logout(request);
+  } catch (error) {
+    return error;
+  }
+};
 
 export default function App() {
   return (

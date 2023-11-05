@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { auth } from "~/api/firebaseClient";
 import type { LoginForm } from "~/types/interfaces";
+import { destroySession, getSession } from "./sessions";
 
 export async function authCreateAccountWithEmail({
   email,
@@ -97,13 +98,19 @@ export async function getUser(request: Request) {
 }
 
 export async function logout(request: Request) {
-  signOut(auth);
-  let session = await storage.getSession(request.headers.get("Cookie"));
-  return redirect("/login", {
-    headers: {
-      "Set-Cookie": await storage.destroySession(session),
-    },
-  });
+  const session = await getSession(request.headers.get("Cookie"));
+
+  return signOut(auth)
+    .then(async () => {
+      return redirect("/SignIn", {
+        headers: {
+          "Set-Cookie": await destroySession(session),
+        },
+      });
+    })
+    .catch((error) => {
+      throw new Error(error.message);
+    });
 }
 
 export async function createUserSession(
