@@ -16,7 +16,9 @@ export async function authCreateAccountWithEmail({
     .then((userCredential) => userCredential.user)
     .catch(function (error): any {
       if (error.code == "auth/weak-password") {
-        throw new Error("Weak password");
+        throw new Error(
+          "Weak password, password must be at least 6 characters"
+        );
       } else {
         throw new Error(error.message);
       }
@@ -29,12 +31,10 @@ export async function authSignInWithEmail({ email, password }: LoginForm) {
   let user = await signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => userCredential.user)
     .catch((error) => {
-      let errorCode = error.code;
-      let errorMessage = error.message;
-      if (errorCode == "auth/invalid-login-credentials") {
-        return "User doesn't exist";
+      if (error.code == "auth/invalid-login-credentials") {
+        throw new Error("Invalid User Credentials");
       } else {
-        return errorMessage;
+        throw new Error(error.message);
       }
     });
   return user;

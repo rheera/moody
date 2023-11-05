@@ -4,7 +4,7 @@ import {
   type ActionFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, useActionData } from "@remix-run/react";
 
 import stylesheet from "~/styles/logout.css";
 import googleLogo from "../assets/images/google.png";
@@ -12,7 +12,6 @@ import googleLogo from "../assets/images/google.png";
 import {
   authCreateAccountWithEmail,
   authSignInWithEmail,
-  createUserSession,
 } from "~/api/session.server";
 
 import { LoginOptions } from "~/types/enums";
@@ -41,27 +40,46 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const user = await authCreateAccountWithEmail({
       email,
       password,
-    } as LoginForm);
-    console.log(user);
-
-    return redirect("/");
+    } as LoginForm)
+      .then((data) => {
+        return redirect("/");
+      })
+      .catch((e) => {
+        return e.message;
+      });
+    return user;
     // const token = await user.getIdToken();
     // return createUserSession(token, "/");
   } else {
-    const { user } = await authSignInWithEmail({
+    const user = await authSignInWithEmail({
       email,
       password,
-    } as LoginForm);
-    const token = await user.getIdToken();
-    return createUserSession(token, "/");
+    } as LoginForm)
+      .then((data) => {
+        return redirect("/");
+      })
+      .catch((e) => {
+        return e.message;
+      });
+    return user;
   }
 };
 export default function SignIn() {
+  const errorMessage = useActionData() as string;
+
   return (
     <section id="logged-out-view">
       <div className="container">
         <h1 className="app-title">Moody</h1>
-
+        {errorMessage && (
+          <div
+            className="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4"
+            role="alert"
+          >
+            <p className="font-bold">Uh Oh!</p>
+            <p>{errorMessage}</p>
+          </div>
+        )}
         <div className="provider-buttons">
           <button
             id="sign-in-with-google-btn"
