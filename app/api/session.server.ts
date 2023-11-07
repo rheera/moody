@@ -102,7 +102,7 @@ export async function logout(request: Request) {
 
   return signOut(auth)
     .then(async () => {
-      return redirect("/SignIn", {
+      return redirect("/signin", {
         headers: {
           "Set-Cookie": await destroySession(session),
         },
