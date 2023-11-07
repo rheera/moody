@@ -6,11 +6,14 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 import stylesheet from "~/styles/tailwind.css";
 import navStyleSheet from "~/styles/nav.css";
 import { Nav } from "./components/Nav";
 import { logout } from "./api/session.server";
+import ErrorPage from "./components/ErrorPage";
+import { ResponseError } from "./types/interfaces";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -46,11 +49,52 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Nav />
-        <Outlet />
+        <header>
+          <Nav />
+        </header>
+        <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col justify-center px-6 lg:px-8">
+          <Outlet />
+        </main>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+      </body>
+    </html>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError() as ResponseError;
+  console.log(error);
+
+  // I should implment this utility function instead of casting as ResponseError
+
+  // let errorMessage: string;
+
+  // if (isRouteErrorResponse(error)) {
+  //   errorMessage = error.data || error.statusText;
+  // } else if (error instanceof Error) {
+  //   errorMessage = error.message;
+  // } else if (typeof error === "string") {
+  //   errorMessage = error;
+  // } else {
+  //   errorMessage = "Unknown error";
+  // }
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <header>
+          <Nav />
+        </header>
+        <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col justify-center px-6 lg:px-8">
+          <ErrorPage error={error} />
+        </main>
+        <Scripts />
       </body>
     </html>
   );

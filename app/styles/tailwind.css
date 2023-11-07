@@ -45,3 +45,9 @@ body {
 section {
   margin: 3em 0;
 }
+
+.app-title {
+  font-family: var(--seconday-font);
+  font-size: 2.5em;
+  text-align: center;
+}
